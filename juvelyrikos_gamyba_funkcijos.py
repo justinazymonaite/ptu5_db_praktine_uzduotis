@@ -13,13 +13,27 @@ def spausdinti_uzsakymus():
     print("(ID, uzsakovas, uzsakymo data, atidavimo uzsakovui data, atsakingas darbuotojas, statusas, modifikacijos, gaminiai)")
     uzsakymai = session.query(Uzsakymas).all()
     for uzsakymas in uzsakymai:
-        print(uzsakymas)
+        print(uzsakymas, uzsakymas.gaminiai)
 
 def spausdinti_darbuotojus():
     print("(ID, vardas, pavarde, asmens kodas, pareigos, tel. numeris, uzsakymai)")
     darbuotojai = session.query(Darbuotojas).all()
     for darbuotojas in darbuotojai:
         print(darbuotojas)
+
+def spausdinti_pasirinkto_darbuotojo_uzsakymus():
+    print("----Pasirinkto darbuotojo uzsakymai----")
+    print("Pasirinkite, kurio darbuotojo uzsakymus noresite perziureti is siu galimu:")
+    spausdinti_darbuotojus()
+    try:
+        pasirinkto_darbuotojo_id = int(input("Irasykite pasirinkto darbuotojo ID: "))
+    except ValueError:
+        print("KLAIDA: iveskite skaiciu")
+    else:
+        pasirinktas_darbuotojas = session.query(Darbuotojas).get(pasirinkto_darbuotojo_id)
+        print(f"{pasirinktas_darbuotojas.vardas} {pasirinktas_darbuotojas.pavarde} uzsakymai:")
+        for uzsakymas in pasirinktas_darbuotojas.uzsakymai:
+            print(uzsakymas, uzsakymas.gaminiai)
 
 def spausdinti_gaminius():
     print("(ID, modelis, tipas, kategorija)")
