@@ -13,7 +13,7 @@ while True:
             \nPasirinkite: ")
         )
     except ValueError:
-            print("KLAIDA: iveskite skaiciu")
+        print("KLAIDA: iveskite skaiciu")
     else:
         if ivestis == 5: 
             break
