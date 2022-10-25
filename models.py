@@ -78,7 +78,6 @@ class Gaminys(Base):
     kategorija = relationship("GaminioKategorija")
     uzsakymai = relationship("Uzsakymas", secondary=uzsakymo_gaminiai, back_populates="gaminiai")
 
-
     def __repr__(self):
         return f"({self.id}, {self.modelis}, {self.tipas}, {self.kategorija})"
 
