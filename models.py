@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, Float, String, Date, Table, ForeignKey, create_engine
+from sqlalchemy import Column, Integer, String, Table, ForeignKey, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-import datetime
 
 engine = create_engine('sqlite:///data/juvelyrikos_gamyba.db')
 Base = declarative_base()
