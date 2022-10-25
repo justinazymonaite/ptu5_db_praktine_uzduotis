@@ -1,5 +1,4 @@
 from juvelyrikos_gamyba_funkcijos import *
-import datetime
 
 
 while True:
@@ -8,14 +7,15 @@ while True:
         ivestis = int(input("Meniu:\
             \n 1 ivesti nauja \
             \n 2 perziureti \
-            \n 3 trinti \
-            \n 4 iseiti is programos \
+            \n 3 gaminio priskyrimas uzsakymui \
+            \n 4 trinti \
+            \n 5 iseiti is programos \
             \nPasirinkite: ")
         )
     except ValueError:
             print("KLAIDA: iveskite skaiciu")
     else:
-        if ivestis == 4: 
+        if ivestis == 5: 
             break
         elif ivestis == 1:
             # 1 submeniu
@@ -64,8 +64,8 @@ while True:
                         except ValueError:
                             print("KLAIDA: iveskite skaiciu")
                         else:
-                            ivesta_uzsakymo_data = input("Uzsakymo data(siandien): ")
-                            ivesta_atidavimo_uzsakovui_data = input("Atidavimo uzsakovui data(siandien+30): ")
+                            ivesta_uzsakymo_data = input("Uzsakymo data: ")
+                            ivesta_atidavimo_uzsakovui_data = input("Atidavimo uzsakovui data: ")
                             print("Pasirinkite atsakinga darbuotoja is siu galimu:")
                             spausdinti_darbuotojus()
                             try:
@@ -81,24 +81,16 @@ while True:
                                     print("KLAIDA: iveskite skaiciu")
                                 else:
                                     ivestos_modifikacijos = input("Iveskite pageidaujamas modifikacijas: ")
-                                    if len(ivesta_uzsakymo_data) == 0:
-                                        uzsakymo_data=datetime.date.today()
-                                    else:
-                                        uzsakymo_data=ivesta_uzsakymo_data
-                                    if len(ivesta_atidavimo_uzsakovui_data) == 0:
-                                        atidavimo_uzsakovui_data=datetime.date.today() + datetime.timedelta(days=30)
-                                    else:
-                                        atidavimo_uzsakovui_data=ivesta_atidavimo_uzsakovui_data
-                                        uzsakymas = Uzsakymas(
-                                            uzsakovas_id=pasirinktas_uzsakovas, 
-                                            uzsakymo_data=uzsakymo_data, 
-                                            atidavimo_uzsakovui_data=atidavimo_uzsakovui_data, atsakingas_darbuotojas = pasirinktas_darbuotojas,
-                                            statusas_id=pasirinktas_statusas,
-                                            modifikacijos=ivestos_modifikacijos
-                                        )
-                                        session.add(uzsakymas)
-                                        session.commit()
-                                        print(f"Naujas uzsakymas {uzsakymas} sukurtas sekmingai")
+                                    uzsakymas = Uzsakymas(
+                                        uzsakovas_id=pasirinktas_uzsakovas, 
+                                        uzsakymo_data=ivesta_uzsakymo_data, 
+                                        atidavimo_uzsakovui_data=ivesta_atidavimo_uzsakovui_data, atsakingas_darbuotojas_id = pasirinktas_darbuotojas,
+                                        statusas_id=pasirinktas_statusas,
+                                        modifikacijos=ivestos_modifikacijos
+                                    )
+                                    session.add(uzsakymas)
+                                    session.commit()
+                                    print(f"Naujas uzsakymas {uzsakymas} sukurtas sekmingai")
                     elif ivestis1 == 3:
                         print("----Naujas darbuotojas----")
                         ivestas_vardas = input("Vardas: ")
@@ -172,17 +164,18 @@ while True:
                         \n 1 perziureti uzsakovus \
                         \n 2 perziureti uzsakymus  \
                         \n 3 perziureti darbuotojus  \
-                        \n 4 perziureti gaminius \
-                        \n 5 perziureti statusus \
-                        \n 6 perziureti tipus \
-                        \n 7 perziureti kategorijas \
-                        \n 8 grizti i pagrindini meniu \
+                        \n 4 perziureti darbuotojo uzsakymus \
+                        \n 5 perziureti gaminius \
+                        \n 6 perziureti statusus \
+                        \n 7 perziureti tipus \
+                        \n 8 perziureti kategorijas \
+                        \n 9 grizti i pagrindini meniu \
                         \nPasirinkite: ")
                     )
                 except ValueError:
                     print("KLAIDA: iveskite skaiciu")
                 else:
-                    if ivestis2 == 8:
+                    if ivestis2 == 9:
                         break
                     elif ivestis2 == 1:
                         print("----Uzsakovai----")
@@ -194,25 +187,50 @@ while True:
                         print("----Darbuotojai----")
                         spausdinti_darbuotojus()
                     elif ivestis2 == 4:
+                        print("----Darbuotojai----")
+                        spausdinti_pasirinkto_darbuotojo_uzsakymus()
+                    elif ivestis2 == 5:
                         print("----Gaminiai----")
                         spausdinti_gaminius()
-                    elif ivestis2 == 5:
+                    elif ivestis2 == 6:
                         print("----Statusai----")
                         spausdinti_statusus()
-                    elif ivestis2 == 6:
+                    elif ivestis2 == 7:
                         print("----Tipai----")
                         spausdinti_tipus()
-                    elif ivestis2 == 7:
+                    elif ivestis2 == 8:
                         print("----Kategorijos----")
                         spausdinti_kategorijas()
                     else:
                         print("KLAIDA: Blogas pasirinkimas, rinkites is naujo!") 
         elif ivestis == 3:
             # trecias submeniu
+            print("----Gaminio priskyrimas uzsakymui----")
+            print("Pasirinkite, kuriam uzsakymui noresite priskirti gamini is siu galimu:")
+            spausdinti_uzsakymus()
+            try:
+                pasirinkto_uzsakymo_id = int(input("Irasykite pasirinkto uzsakymo ID: "))
+            except ValueError:
+                print("KLAIDA: iveskite skaiciu")
+            else:
+                pasirinktas_uzsakymas = session.query(Uzsakymas).get(pasirinkto_uzsakymo_id)
+                print(f"Pasirinkite, kuri gamini noresite priskirti uzsakymui {pasirinktas_uzsakymas} is siu galimu:")
+                spausdinti_gaminius()
+                try:
+                    pasirinkto_gaminio_id = int(input("Irasykite pasirinkto gaminio ID: "))
+                except ValueError:
+                    print("KLAIDA: iveskite skaiciu")
+                else:
+                    pasirinktas_gaminys = session.query(Gaminys).get(pasirinkto_gaminio_id)
+                    pasirinktas_gaminys.uzsakymai.append(pasirinktas_uzsakymas)
+                    session.commit()
+                    print(f"Gaminys {pasirinktas_gaminys} sekmingai priskirtas uzsakymui {pasirinktas_uzsakymas}")
+        elif ivestis == 4:
+            # ketvirtas submeniu
             while True:
                 print("----Trynimas----")
                 try:
-                    ivestis3 = int(input("Meniu:\
+                    ivestis4 = int(input("Meniu:\
                         \n 1 trinti uzsakova \
                         \n 2 trinti uzsakyma  \
                         \n 3 trinti darbuotoja  \
@@ -226,9 +244,9 @@ while True:
                 except ValueError:
                     print("KLAIDA: iveskite skaiciu")
                 else:
-                    if ivestis3 == 8:
+                    if ivestis4 == 8:
                         break
-                    elif ivestis3 == 1:
+                    elif ivestis4 == 1:
                         print("----Trinti uzsakova----")
                         print("Pasirinkite uzsakova is siu galimu:")
                         spausdinti_uzsakovus()
@@ -238,7 +256,7 @@ while True:
                             print("KLAIDA: iveskite skaiciu")
                         else:
                             trinti_objekta(Uzsakovas, trinamo_uzsakovo_id)
-                    elif ivestis3 == 2:
+                    elif ivestis4 == 2:
                         print("----Trinti uzsakyma----")
                         print("Pasirinkite uzsakyma is siu galimu:")
                         spausdinti_uzsakymus()
@@ -248,7 +266,7 @@ while True:
                             print("KLAIDA: iveskite skaiciu")
                         else:
                             trinti_objekta(Uzsakymas, trinamo_uzsakymo_id)
-                    elif ivestis3 == 3:
+                    elif ivestis4 == 3:
                         print("----Trinti darbuotoja----")
                         print("Pasirinkite darbuotoja is siu galimu:")
                         spausdinti_darbuotojus()
@@ -258,7 +276,7 @@ while True:
                             print("KLAIDA: iveskite skaiciu")
                         else:
                             trinti_objekta(Darbuotojas, trinamo_darbuotojo_id)
-                    elif ivestis3 == 4:
+                    elif ivestis4 == 4:
                         print("----Trinti gamini----")
                         print("Pasirinkite gamini is siu galimu:")
                         spausdinti_gaminius()
@@ -268,7 +286,7 @@ while True:
                             print("KLAIDA: iveskite skaiciu")
                         else:
                             trinti_objekta(Gaminys, trinamo_gaminio_id)
-                    elif ivestis3 == 5:
+                    elif ivestis4 == 5:
                         print("----Trinti statusa----")
                         print("Pasirinkite statusa is siu galimu:")
                         spausdinti_statusus()
@@ -278,7 +296,7 @@ while True:
                             print("KLAIDA: iveskite skaiciu")
                         else:
                             trinti_objekta(Statusas, trinamo_statuso_id)
-                    elif ivestis3 == 6:
+                    elif ivestis4 == 6:
                         print("----Trinti tipa----")
                         print("Pasirinkite tipa is siu galimu:")
                         spausdinti_tipus()
@@ -288,7 +306,7 @@ while True:
                             print("KLAIDA: iveskite skaiciu")
                         else:
                             trinti_objekta(GaminioTipas, trinamo_tipo_id)
-                    elif ivestis3 == 7:
+                    elif ivestis4 == 7:
                         print("----Trinti kategorija----")
                         print("Pasirinkite kategorija is siu galimu:")
                         spausdinti_kategorijas()
